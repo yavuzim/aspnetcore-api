@@ -12,6 +12,12 @@ namespace HotelProject.BusinessLayer.Concrete
     public class StaffManager : IStaffService
     {
         private readonly IStaffDal _staffDal;
+
+        public StaffManager(IStaffDal staffDal)
+        {
+            _staffDal = staffDal;
+        }
+
         public void TDelete(Staff t)
         {
             _staffDal.Delete(t);
