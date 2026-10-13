@@ -41,7 +41,7 @@ namespace HotelProject.WebApi.Controllers
             _subscribeService.TUpdate(Subscribe);
             return Ok();
         }
-        [HttpGet("id")]
+        [HttpGet("{id}")]
         public IActionResult GetSubscribe(int id)
         {
             var values = _subscribeService.TGetById(id);

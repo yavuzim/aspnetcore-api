@@ -28,7 +28,7 @@ namespace HotelProject.WebApi.Controllers
             _testimonialService.TInsert(Testimonial);
             return Ok();
         }
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public IActionResult DeleteTestimonial(int id)
         {
             var values = _testimonialService.TGetById(id);
@@ -41,7 +41,7 @@ namespace HotelProject.WebApi.Controllers
             _testimonialService.TUpdate(Testimonial);
             return Ok();
         }
-        [HttpGet("id")]
+        [HttpGet("{id}")]
         public IActionResult GetTestimonial(int id)
         {
             var values = _testimonialService.TGetById(id);
