@@ -1,0 +1,67 @@
+﻿@model UpdateServiceDto
+@{
+    ViewData["Title"] = "UpdateService";
+    Layout = "~/Views/AdminLayout/_AdminLayout.cshtml";
+}
+
+<div class="form-card">
+    <div class="form-card-header">
+        <h4>Hizmet Güncelle</h4>
+        <small>Hizmet bilgilerini düzenleyin.</small>
+    </div>
+
+    <form method="post" asp-action="UpdateService" asp-controller="Service">
+        <input type="hidden" asp-for="ServiceId" />
+
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <div class="form-section-title">Hizmet Bilgileri</div>
+
+        <div class="row">
+            <div class="form-group col-md-6">
+                <label asp-for="Title">Hizmet Başlığı</label>
+                <div class="input-icon">
+                    <i class="fa fa-heading"></i>
+                    <input type="text"
+                           asp-for="Title"
+                           class="form-control"
+                           placeholder="Hizmet başlığını giriniz" />
+                </div>
+                <span asp-validation-for="Title" class="text-danger small"></span>
+            </div>
+
+            <div class="form-group col-md-6">
+                <label asp-for="ServiceIcon">Hizmet İkon Linki</label>
+                <div class="input-icon">
+                    <i class="fa fa-link"></i>
+                    <input type="text"
+                           asp-for="ServiceIcon"
+                           class="form-control"
+                           placeholder="İkon linkini giriniz" />
+                </div>
+                <span asp-validation-for="ServiceIcon" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <div class="form-section-title mt-3">Hizmet Açıklaması</div>
+
+        <div class="form-group">
+            <label asp-for="Description">Açıklama</label>
+            <textarea asp-for="Description"
+                      class="form-control"
+                      rows="5"
+                      maxlength="500"
+                      placeholder="Hizmet açıklamasını giriniz"></textarea>
+            <span asp-validation-for="Description" class="text-danger small"></span>
+        </div>
+
+        <div class="form-actions">
+            <a asp-action="Index" class="btn btn-cancel">Vazgeç</a>
+
+            <button type="submit" class="btn btn-save">
+                <i class="fa fa-check mr-1"></i> Güncelle
+            </button>
+        </div>
+    </form>
+</div>
+

@@ -1,0 +1,273 @@
+﻿@model List<ResultServiceDto>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/AdminLayout/_AdminLayout.cshtml";
+}
+
+<div class="svc-wrap">
+    <div class="svc-head">
+        <div>
+            <h4>Hizmet Listesi</h4>
+            <small>Toplam @Model.Count hizmet kayıtlı</small>
+        </div>
+
+        <a href="/Service/AddService" class="svc-btn svc-btn-primary">
+            <i class="fa fa-plus"></i> Yeni Hizmet Girişi
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="svc-alert svc-alert-ok">
+            <i class="fa fa-check-circle"></i> @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="svc-alert svc-alert-err">
+            <i class="fa fa-exclamation-circle"></i> @TempData["Error"]
+        </div>
+    }
+
+    @if (Model.Any())
+    {
+        <div class="svc-toolbar">
+            <div class="svc-toolbar-right">
+                <label for="svcPageSize" class="mb-0">Sayfa başına</label>
+                <select id="svcPageSize" class="svc-select">
+                    <option value="5">5</option>
+                    <option value="10" selected>10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                </select>
+            </div>
+        </div>
+    }
+
+    <div class="svc-table-scroll">
+        <table class="svc-table" id="svcTable">
+            <thead>
+                <tr>
+                    <th class="svc-col-id" data-sort="id">
+                        #<i class="fa fa-sort svc-arrow"></i>
+                    </th>
+                    <th data-sort="title">
+                        Hizmet Başlığı<i class="fa fa-sort svc-arrow"></i>
+                    </th>
+                    <th class="svc-col-actions">İşlemler</th>
+                </tr>
+            </thead>
+
+            <tbody id="svcBody">
+                @if (Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr data-row data-id="@item.ServiceId" data-title="@item.Title">
+                            <td>
+                                <span class="svc-id">@item.ServiceId</span>
+                            </td>
+                            <td>
+                                <span class="svc-title">@item.Title</span>
+                            </td>
+                            <td class="svc-col-actions">
+                                <div class="svc-actions">
+                                    <a href="/Service/UpdateService/@item.ServiceId"
+                                       class="svc-icon-btn svc-icon-edit"
+                                       title="Güncelle">
+                                        <i class="fa fa-pencil"></i>
+                                    </a>
+
+                                    <a href="/Service/DeleteService/@item.ServiceId"
+                                       class="svc-icon-btn svc-icon-del"
+                                       title="Sil">
+                                        <i class="fa fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="3" class="svc-empty">
+                            <i class="fa fa-folder-open fa-2x"></i>
+                            <div class="mb-3">Henüz kayıtlı hizmet bulunmuyor.</div>
+
+                            <a href="/Service/AddService" class="svc-btn svc-btn-primary">
+                                <i class="fa fa-plus"></i> İlk hizmeti ekle
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="svc-footer">
+            <span id="svcInfo"></span>
+            <div class="svc-pager" id="svcPager"></div>
+        </div>
+    }
+</div>
+
+<script>
+    (function () {
+        var body = document.getElementById('svcBody');
+        if (!body || !document.getElementById('svcPageSize')) return;
+
+        var rows = Array.prototype.slice.call(
+            body.querySelectorAll('tr[data-row]')
+        );
+
+        var sizeEl = document.getElementById('svcPageSize');
+        var infoEl = document.getElementById('svcInfo');
+        var pagerEl = document.getElementById('svcPager');
+        var heads = document.querySelectorAll('#svcTable th[data-sort]');
+
+        var state = {
+            key: 'id',
+            dir: 1,
+            page: 1,
+            size: Number(sizeEl.value)
+        };
+
+        function norm(s) {
+            return (s || '').toLocaleLowerCase('tr');
+        }
+
+        function compare(a, b) {
+            if (state.key === 'id') {
+                return (Number(a.dataset.id) - Number(b.dataset.id)) * state.dir;
+            }
+
+            return norm(a.dataset.title).localeCompare(
+                norm(b.dataset.title), 'tr'
+            ) * state.dir;
+        }
+
+        function render() {
+            var sorted = rows.slice().sort(compare);
+            var total = sorted.length;
+            var pages = Math.max(1, Math.ceil(total / state.size));
+
+            if (state.page > pages) {
+                state.page = pages;
+            }
+
+            var start = (state.page - 1) * state.size;
+            var visible = sorted.slice(start, start + state.size);
+
+            rows.forEach(function (row) {
+                row.hidden = true;
+            });
+
+            visible.forEach(function (row) {
+                row.hidden = false;
+                body.appendChild(row);
+            });
+
+            infoEl.textContent = total === 0
+                ? '0 kayıt'
+                : (start + 1) + '–' + (start + visible.length) +
+                  ' / ' + total + ' kayıt';
+
+            renderPager(pages);
+
+            heads.forEach(function (head) {
+                var active = head.dataset.sort === state.key;
+
+                head.classList.toggle('svc-sorted', active);
+
+                var arrow = head.querySelector('.svc-arrow');
+
+                arrow.className = 'fa svc-arrow ' +
+                    (active
+                        ? (state.dir === 1 ? 'fa-sort-asc' : 'fa-sort-desc')
+                        : 'fa-sort');
+            });
+        }
+
+        function pageBtn(label, page, opts) {
+            var button = document.createElement('button');
+
+            button.type = 'button';
+            button.className = 'svc-page-btn' +
+                (opts && opts.current ? ' svc-current' : '');
+
+            button.innerHTML = label;
+            button.disabled = !!(opts && opts.disabled);
+
+            button.addEventListener('click', function () {
+                state.page = page;
+                render();
+            });
+
+            return button;
+        }
+
+        function renderPager(pages) {
+            pagerEl.innerHTML = '';
+
+            if (pages <= 1) return;
+
+            pagerEl.appendChild(
+                pageBtn('<i class="fa fa-angle-left"></i>',
+                    state.page - 1,
+                    { disabled: state.page === 1 })
+            );
+
+            for (var p = 1; p <= pages; p++) {
+                if (p === 1 || p === pages ||
+                    Math.abs(p - state.page) <= 1) {
+
+                    pagerEl.appendChild(
+                        pageBtn(p, p, { current: p === state.page })
+                    );
+
+                } else if (Math.abs(p - state.page) === 2) {
+                    var dots = document.createElement('span');
+                    dots.textContent = '…';
+                    dots.style.cssText = 'align-self:center;padding:0 2px';
+                    pagerEl.appendChild(dots);
+                }
+            }
+
+            pagerEl.appendChild(
+                pageBtn('<i class="fa fa-angle-right"></i>',
+                    state.page + 1,
+                    { disabled: state.page === pages })
+            );
+        }
+
+        sizeEl.addEventListener('change', function () {
+            state.size = Number(sizeEl.value);
+            state.page = 1;
+            render();
+        });
+
+        heads.forEach(function (head) {
+            head.addEventListener('click', function () {
+                var key = head.dataset.sort;
+
+                if (state.key === key) {
+                    state.dir *= -1;
+                } else {
+                    state.key = key;
+                    state.dir = 1;
+                }
+
+                state.page = 1;
+                render();
+            });
+        });
+
+        render();
+    })();
+</script>
+
+
