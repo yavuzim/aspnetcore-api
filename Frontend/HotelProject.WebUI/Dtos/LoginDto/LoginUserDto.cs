@@ -7,7 +7,7 @@ namespace HotelProject.WebUI.Dtos.LoginDto
         [Required(ErrorMessage = "Kullanıcı Adını Giriniz")]
         public string Username { get; set; }
 
-        [Required(ErrorMessage = "Şifreyi Adını Giriniz")]
+        [Required(ErrorMessage = "Şifreyi Giriniz")]
         public string Password { get; set; }
     }
 }
