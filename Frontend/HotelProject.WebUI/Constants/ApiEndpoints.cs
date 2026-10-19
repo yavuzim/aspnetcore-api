@@ -6,5 +6,6 @@
         public const string Testimonial = "api/Testimonial";
         public const string Service = "api/Service";
         public const string About = "api/About";
+        public const string Room = "api/Room";
     }
 }
