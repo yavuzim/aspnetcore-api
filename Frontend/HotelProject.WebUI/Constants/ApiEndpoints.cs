@@ -7,5 +7,6 @@
         public const string Service = "api/Service";
         public const string About = "api/About";
         public const string Room = "api/Room";
+        public const string Subscribe = "api/Subscribe";
     }
 }
