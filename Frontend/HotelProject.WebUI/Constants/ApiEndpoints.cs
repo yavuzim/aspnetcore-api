@@ -8,5 +8,6 @@
         public const string About = "api/About";
         public const string Room = "api/Room";
         public const string Subscribe = "api/Subscribe";
+        public const string Booking = "api/Booking";
     }
 }
